@@ -1,0 +1,13 @@
+Source: pve-journalreader
+Section: admin
+Priority: extra
+Maintainer: Proxmox Support Team <support@proxmox.com>
+Build-Depends: debhelper (>= 10~), libsystemd-dev
+Standards-Version: 3.9.8
+
+Package: pve-journalreader
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: Minimal Journal Reader
+ A minimal application to read the last X lines of the journal or the last X
+ lines before a cursor.
