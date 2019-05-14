@@ -1,4 +1,4 @@
-PACKAGE := pve-journalreader
+PACKAGE := proxmox-mini-journalreader
 
 ARCH != dpkg-architecture -qDEB_BUILD_ARCH
 PKGVER != dpkg-parsechangelog -S version

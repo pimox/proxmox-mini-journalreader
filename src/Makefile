@@ -1,5 +1,5 @@
-PROGRAM=journalreader
-SOURCES=journalreader.c
+PROGRAM=mini-journalreader
+SOURCES=mini-journalreader.c
 
 LIBS := libsystemd
 CFLAGS += $(shell pkg-config --cflags ${LIBS})
