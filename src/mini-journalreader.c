@@ -54,7 +54,10 @@ void print_to_buf(const char * string, uint32_t length) {
         strncpy(buf + offset, string + string_offset, BUFSIZE - offset);
         string_offset += BUFSIZE - offset;
         remaining = length - string_offset;
-        write (1, buf, BUFSIZE);
+        if (write (1, buf, BUFSIZE) <= 0) {
+            perror("write to stdout failed");
+            exit(1);
+        }
         offset = 0;
     }
     strncpy(buf + offset, string + string_offset, remaining);
@@ -351,10 +354,13 @@ int main(int argc, char *argv[]) {
 
     // print final cursor
     print_cursor(j);
+    sd_journal_close(j);
 
     // print remaining buffer
-    write(1, buf, offset);
-    sd_journal_close(j);
+    if (write (1, buf, offset) <= 0) {
+        perror("write to stdout failed");
+        return 1;
+    }
 
     return 0;
 }
