@@ -39,8 +39,8 @@ uint64_t convert_argument(const char *argument) {
     char * end;
     uint64_t value = strtoull(argument, &end, 10);
     if (errno != 0 || *end != '\0') {
-	fprintf(stderr, "%s is not a valid number\n", argument);
-	exit(1);
+        fprintf(stderr, "%s is not a valid number\n", argument);
+        exit(1);
     }
 
     return value;
@@ -50,24 +50,24 @@ uint64_t get_timestamp(sd_journal *j) {
     uint64_t timestamp;
     int r = sd_journal_get_realtime_usec(j, &timestamp);
     if (r < 0) {
-	fprintf(stderr, "Failed  %s\n", strerror(-r));
-	return 0xFFFFFFFFFFFFFFFF;
+        fprintf(stderr, "Failed  %s\n", strerror(-r));
+        return 0xFFFFFFFFFFFFFFFF;
     }
     return timestamp;
 }
 
 void print_to_buf(const char * string, uint32_t length) {
     if (!length) {
-	return;
+        return;
     }
     size_t string_offset = 0;
     size_t remaining = length;
     while (offset + remaining > BUFSIZE) {
-	strncpy(buf+offset, string+string_offset, BUFSIZE-offset);
-	string_offset += BUFSIZE-offset;
-	remaining = length - string_offset;
-	write (1, buf, BUFSIZE);
-	offset = 0;
+        strncpy(buf+offset, string+string_offset, BUFSIZE-offset);
+        string_offset += BUFSIZE-offset;
+        remaining = length - string_offset;
+        write (1, buf, BUFSIZE);
+        offset = 0;
     }
     strncpy(buf+offset, string+string_offset, remaining);
     offset += remaining;
@@ -80,8 +80,8 @@ void print_cursor(sd_journal *j) {
     char *cursor = NULL;
     r = sd_journal_get_cursor(j, &cursor);
     if (r < 0) {
-	fprintf(stderr, "Failed to get cursor: %s\n", strerror(-r));
-	exit(1);
+        fprintf(stderr, "Failed to get cursor: %s\n", strerror(-r));
+        exit(1);
     }
     print_to_buf(cursor, strlen(cursor));
     print_to_buf("\n", 1);
@@ -90,8 +90,8 @@ void print_cursor(sd_journal *j) {
 
 void print_first_cursor(sd_journal *j) {
     if (!printed_first_cursor) {
-	print_cursor(j);
-	printed_first_cursor = true;
+        print_cursor(j);
+        printed_first_cursor = true;
     }
 }
 
@@ -104,8 +104,8 @@ void print_reboot(sd_journal *j) {
     size_t l;
     int r = sd_journal_get_data(j, "_BOOT_ID", (const void **)&d, &l);
     if (r < 0) {
-	fprintf(stderr, "Failed  %s\n", strerror(-r));
-	return;
+        fprintf(stderr, "Failed  %s\n", strerror(-r));
+        return;
     }
 
     // remove '_BOOT_ID='
@@ -113,12 +113,12 @@ void print_reboot(sd_journal *j) {
     l -= 9;
 
     if (bootid[0] != '\0') { // we have some bootid
-	if (strncmp(bootid, d, l)) { // a new bootid found
-	    strncpy(bootid, d, l);
-	    print_to_buf("-- Reboot --\n", 13);
-	}
+        if (strncmp(bootid, d, l)) { // a new bootid found
+            strncpy(bootid, d, l);
+            print_to_buf("-- Reboot --\n", 13);
+        }
     } else {
-	    strncpy(bootid, d, l);
+        strncpy(bootid, d, l);
     }
 }
 
@@ -126,16 +126,16 @@ void print_timestamp(sd_journal *j) {
     uint64_t timestamp;
     int r = sd_journal_get_realtime_usec(j, &timestamp);
     if (r < 0) {
-	fprintf(stderr, "Failed  %s\n", strerror(-r));
-	return;
+        fprintf(stderr, "Failed  %s\n", strerror(-r));
+        return;
     }
 
     if (timestamp >= (last_timestamp+(1000*1000))) {
-	timestamp = timestamp / (1000*1000); // usec to sec
-	struct tm time;
-	localtime_r((time_t *)&timestamp, &time);
-	strftime(timestring, 16, "%b %d %T", &time);
-	last_timestamp = timestamp;
+        timestamp = timestamp / (1000*1000); // usec to sec
+        struct tm time;
+        localtime_r((time_t *)&timestamp, &time);
+        strftime(timestring, 16, "%b %d %T", &time);
+        last_timestamp = timestamp;
     }
 
     print_to_buf(timestring, 15);
@@ -146,8 +146,8 @@ void print_pid(sd_journal *j) {
     size_t l;
     int r = sd_journal_get_data(j, "_PID", (const void **)&d, &l);
     if (r < 0) {
-	// we sometimes have no pid
-	return;
+        // we sometimes have no pid
+        return;
     }
 
     // remove '_PID='
@@ -164,8 +164,8 @@ bool print_field(sd_journal *j, const char *field) {
     size_t l;
     int r = sd_journal_get_data(j, field, (const void **)&d, &l);
     if (r < 0) {
-	// some fields do not exists
-	return false;
+        // some fields do not exists
+        return false;
     }
 
     int fieldlen = strlen(field)+1;
@@ -183,8 +183,8 @@ void print_line(sd_journal *j) {
     print_field(j, "_HOSTNAME");
     print_to_buf(" ", 1);
     if (!print_field(j, "SYSLOG_IDENTIFIER") &&
-	!print_field(j, "_COMM")) {
-	print_to_buf("unknown", strlen("unknown") - 1);
+            !print_field(j, "_COMM")) {
+        print_to_buf("unknown", strlen("unknown") - 1);
     }
     print_pid(j);
     print_to_buf(": ", 2);
@@ -217,56 +217,56 @@ int main(int argc, char *argv[]) {
     char c;
 
     while ((c = getopt (argc, argv, "b:e:d:n:f:t:h")) != -1) {
-	switch (c) {
-	    case 'b':
-		begin = convert_argument(optarg);
-		begin = begin*1000*1000;
-		break;
-	    case 'e':
-		end = convert_argument(optarg);
-		end = end*1000*1000;
-		break;
-	    case 'd':
-		directory = optarg;
-		break;
-	    case 'n':
-		number = convert_argument(optarg);
-		break;
-	    case 'f':
-		startcursor = optarg;
-		break;
-	    case 't':
-		endcursor = optarg;
-		break;
-	    case 'h':
-		usage(argv[0]);
-		exit(0);
-		break;
-	    case '?':
-	    default:
-		usage(argv[0]);
-		exit(1);
-	}
+        switch (c) {
+            case 'b':
+                begin = convert_argument(optarg);
+                begin = begin*1000*1000;
+                break;
+            case 'e':
+                end = convert_argument(optarg);
+                end = end*1000*1000;
+                break;
+            case 'd':
+                directory = optarg;
+                break;
+            case 'n':
+                number = convert_argument(optarg);
+                break;
+            case 'f':
+                startcursor = optarg;
+                break;
+            case 't':
+                endcursor = optarg;
+                break;
+            case 'h':
+                usage(argv[0]);
+                exit(0);
+                break;
+            case '?':
+            default:
+                usage(argv[0]);
+                exit(1);
+        }
     }
 
     if (number && (begin || startcursor)) {
-	usage(argv[0]);
-	exit(1);
+        usage(argv[0]);
+        exit(1);
     }
 
     if (begin && startcursor) {
-	usage(argv[0]);
-	exit(1);
+        usage(argv[0]);
+        exit(1);
     }
 
     if (end && endcursor) {
-	usage(argv[0]);
-	exit(1);
+        usage(argv[0]);
+        exit(1);
     }
 
     if (argc > optind) {
-	usage(argv[0]);
-	exit(1);
+        usage(argv[0]);
+        exit(1);
     }
 
     // to prevent calling it everytime we generate a timestamp
@@ -275,72 +275,72 @@ int main(int argc, char *argv[]) {
     int r;
     sd_journal *j;
     if (directory == NULL) {
-	r = sd_journal_open(&j, SD_JOURNAL_LOCAL_ONLY);
+        r = sd_journal_open(&j, SD_JOURNAL_LOCAL_ONLY);
     } else {
-	r = sd_journal_open_directory(&j, directory, 0);
+        r = sd_journal_open_directory(&j, directory, 0);
     }
 
     if (r < 0) {
-	fprintf(stderr, "Failed to open journal: %s\n", strerror(-r));
-	return 1;
+        fprintf(stderr, "Failed to open journal: %s\n", strerror(-r));
+        return 1;
     }
 
     // if we want to print the last x entries, seek to cursor or end,
     // then x entries back, print the cursor and finally print the
     // entries until end or cursor
     if (number) {
-	if (end) {
-	    r = sd_journal_seek_realtime_usec(j, end);
-	} else if (endcursor != NULL) {
-	    r = sd_journal_seek_cursor(j, endcursor);
-	    number++;
-	} else {
-	    r = sd_journal_seek_tail(j);
-	}
+        if (end) {
+            r = sd_journal_seek_realtime_usec(j, end);
+        } else if (endcursor != NULL) {
+            r = sd_journal_seek_cursor(j, endcursor);
+            number++;
+        } else {
+            r = sd_journal_seek_tail(j);
+        }
 
-	if (r < 0) {
-	    fprintf(stderr, "Failed to seek to end/cursor: %s\n", strerror(-r));
-	    exit(1);
-	}
+        if (r < 0) {
+            fprintf(stderr, "Failed to seek to end/cursor: %s\n", strerror(-r));
+            exit(1);
+        }
 
-	// seek back number entries and print cursor
-	r = sd_journal_previous_skip(j, number + 1);
-	if (r < 0) {
-	    fprintf(stderr, "Failed to seek back: %s\n", strerror(-r));
-	    exit(1);
-	}
+        // seek back number entries and print cursor
+        r = sd_journal_previous_skip(j, number + 1);
+        if (r < 0) {
+            fprintf(stderr, "Failed to seek back: %s\n", strerror(-r));
+            exit(1);
+        }
     } else {
-	if (begin) {
-	    r = sd_journal_seek_realtime_usec(j, begin);
-	} else if (startcursor) {
-	    r = sd_journal_seek_cursor(j, startcursor);
-	} else {
-	    r = sd_journal_seek_head(j);
-	}
+        if (begin) {
+            r = sd_journal_seek_realtime_usec(j, begin);
+        } else if (startcursor) {
+            r = sd_journal_seek_cursor(j, startcursor);
+        } else {
+            r = sd_journal_seek_head(j);
+        }
 
-	if (r < 0) {
-	    fprintf(stderr, "Failed to seek to begin/cursor: %s\n", strerror(-r));
-	    exit(1);
-	}
+        if (r < 0) {
+            fprintf(stderr, "Failed to seek to begin/cursor: %s\n", strerror(-r));
+            exit(1);
+        }
 
-	// if we have a start cursor, we want to skip the first entry
-	if (startcursor) {
-	    r = sd_journal_next(j);
-	    if (r < 0) {
-		fprintf(stderr, "Failed to seek to begin/cursor: %s\n", strerror(-r));
-		exit(1);
-	    }
-	    print_first_cursor(j);
-	}
+        // if we have a start cursor, we want to skip the first entry
+        if (startcursor) {
+            r = sd_journal_next(j);
+            if (r < 0) {
+                fprintf(stderr, "Failed to seek to begin/cursor: %s\n", strerror(-r));
+                exit(1);
+            }
+            print_first_cursor(j);
+        }
     }
 
 
     while ((r = sd_journal_next(j)) > 0 && (end == 0 || get_timestamp(j) < end)) {
-	print_first_cursor(j);
-	if (endcursor != NULL && sd_journal_test_cursor(j, endcursor)) {
-	    break;
-	}
-	print_line(j);
+        print_first_cursor(j);
+        if (endcursor != NULL && sd_journal_test_cursor(j, endcursor)) {
+            break;
+        }
+        print_line(j);
     }
 
     // print optional reboot
