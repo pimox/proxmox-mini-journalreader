@@ -61,8 +61,6 @@ void print_to_buf(const char * string, uint32_t length) {
     offset += remaining;
 }
 
-bool printed_first_cursor = false;
-
 void print_cursor(sd_journal *j) {
     int r;
     char *cursor = NULL;
@@ -77,15 +75,12 @@ void print_cursor(sd_journal *j) {
 }
 
 void print_first_cursor(sd_journal *j) {
+    static bool printed_first_cursor = false;
     if (!printed_first_cursor) {
         print_cursor(j);
         printed_first_cursor = true;
     }
 }
-
-static uint64_t last_timestamp;
-static char timestring[16];
-static char bootid[32];
 
 void print_reboot(sd_journal *j) {
     const char *d;
@@ -100,6 +95,7 @@ void print_reboot(sd_journal *j) {
     d += 9;
     l -= 9;
 
+    static char bootid[32];
     if (bootid[0] != '\0') { // we have some bootid
         if (strncmp(bootid, d, l)) { // a new bootid found
             strncpy(bootid, d, l);
@@ -118,6 +114,8 @@ void print_timestamp(sd_journal *j) {
         return;
     }
 
+    static uint64_t last_timestamp;
+    static char timestring[16];
     if (timestamp >= (last_timestamp+(1000*1000))) {
         timestamp = timestamp / (1000*1000); // usec to sec
         struct tm time;
