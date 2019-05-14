@@ -4,9 +4,9 @@ ARCH != dpkg-architecture -qDEB_BUILD_ARCH
 PKGVER != dpkg-parsechangelog -S version
 GITVERSION:=$(shell git rev-parse HEAD)
 
-all: $(DEB)
-
 DEB=${PACKAGE}_${PKGVER}_${ARCH}.deb
+
+all: $(DEB)
 
 .PHONY: deb
 deb: $(DEB)
