@@ -1,8 +1,7 @@
 /*
-
     Copyright (C) 2019 Proxmox Server Solutions GmbH
 
-    Copyright: journalreader is under GNU GPL, the GNU General Public License.
+    Copyright: mini-journal is under GNU GPL, the GNU General Public License.
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,7 +18,6 @@
     02111-1307, USA.
 
     Author: Dominik Csapak <d.csapak@proxmox.com>
-
 */
 
 #include <errno.h>
