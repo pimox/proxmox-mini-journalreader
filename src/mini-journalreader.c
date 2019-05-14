@@ -178,7 +178,12 @@ void print_line(sd_journal *j) {
     print_to_buf("\n", 1);
 }
 
-void usage(char *progname) {
+char *progname;
+
+void usage(char *error) {
+    if (error) {
+        fprintf(stderr, "ERROR: %s\n", error);
+    }
     fprintf(stderr, "usage: %s [OPTIONS]\n", progname);
     fprintf(stderr, "  -b begin\tbegin at this epoch\n");
     fprintf(stderr, "  -e end\tend at this epoch\n");
@@ -191,6 +196,7 @@ void usage(char *progname) {
     fprintf(stderr, "giving a range conflicts with -n\n");
     fprintf(stderr, "-b and -f conflict\n");
     fprintf(stderr, "-e and -t conflict\n");
+    exit(error ? 1 : 0);
 }
 
 static uint64_t arg_to_uint64(const char *argument) {
@@ -215,6 +221,8 @@ int main(int argc, char *argv[]) {
     uint64_t end = 0;
     char c;
 
+    progname = argv[0];
+
     while ((c = getopt (argc, argv, "b:e:d:n:f:t:h")) != -1) {
         switch (c) {
             case 'b':
@@ -238,34 +246,28 @@ int main(int argc, char *argv[]) {
                 endcursor = optarg;
                 break;
             case 'h':
-                usage(argv[0]);
-                exit(0);
+                usage(NULL);
                 break;
             case '?':
             default:
-                usage(argv[0]);
-                exit(1);
+                usage("invalid option or missing argument");
         }
     }
 
     if (number && (begin || startcursor)) {
-        usage(argv[0]);
-        exit(1);
+        usage("-n conflicts with -b and/or -f");
     }
 
     if (begin && startcursor) {
-        usage(argv[0]);
-        exit(1);
+        usage("-b and -f conflict");
     }
 
     if (end && endcursor) {
-        usage(argv[0]);
-        exit(1);
+        usage("-e and -t conflict");
     }
 
     if (argc > optind) {
-        usage(argv[0]);
-        exit(1);
+        usage("unkown, or to many arguments");
     }
 
     // to prevent calling it everytime we generate a timestamp
