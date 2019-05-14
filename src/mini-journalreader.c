@@ -185,17 +185,19 @@ void usage(char *error) {
         fprintf(stderr, "ERROR: %s\n", error);
     }
     fprintf(stderr, "usage: %s [OPTIONS]\n", progname);
-    fprintf(stderr, "  -b begin\tbegin at this UNIX epoch based timestamp\n");
-    fprintf(stderr, "  -e end\tend at this UNIX epoch based timestamp\n");
-    fprintf(stderr, "  -d directory\tpath to journal directory\n");
-    fprintf(stderr, "  -n number\tprint the last number entries\n");
-    fprintf(stderr, "  -f from\tprint from this cursor\n");
-    fprintf(stderr, "  -t to\tprint to this cursor\n");
-    fprintf(stderr, "  -h \t\tthis help\n");
-    fprintf(stderr, "\n");
-    fprintf(stderr, "giving a range conflicts with -n\n");
-    fprintf(stderr, "-b and -f conflict\n");
-    fprintf(stderr, "-e and -t conflict\n");
+    fprintf(stderr,
+        "  -b <timestamp>\tbegin at this UNIX epoch based timestamp\n"
+        "  -e <timestamp>\tend at this UNIX epoch based timestamp\n"
+        "  -d <directory>\tpath to a journal directory\n"
+        "  -n <integer>\t\tprint the last number entries logged\n"
+        "  -f <cursor>\t\tprint from this cursor\n"
+        "  -t <cursor>\t\tprint to this cursor\n"
+        "  -h \t\t\tthis help\n"
+        "\n"
+        "Passing no range option will dump all the available journal\n"
+        "Giving a range conflicts with -n\n"
+        "-b and -f conflict\n"
+        "-e and -t conflict\n");
     exit(error ? 1 : 0);
 }
 
