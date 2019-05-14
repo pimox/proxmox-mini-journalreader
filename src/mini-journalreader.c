@@ -51,13 +51,13 @@ void print_to_buf(const char * string, uint32_t length) {
     size_t string_offset = 0;
     size_t remaining = length;
     while (offset + remaining > BUFSIZE) {
-        strncpy(buf+offset, string+string_offset, BUFSIZE-offset);
-        string_offset += BUFSIZE-offset;
+        strncpy(buf + offset, string + string_offset, BUFSIZE - offset);
+        string_offset += BUFSIZE - offset;
         remaining = length - string_offset;
         write (1, buf, BUFSIZE);
         offset = 0;
     }
-    strncpy(buf+offset, string+string_offset, remaining);
+    strncpy(buf + offset, string + string_offset, remaining);
     offset += remaining;
 }
 
@@ -132,7 +132,7 @@ void print_pid(sd_journal *j) {
     size_t l;
     int r = sd_journal_get_data(j, "_PID", (const void **)&d, &l);
     if (r < 0) {
-        // we sometimes have no pid
+        // we sometimes have no pid, e.g., kernel messages
         return;
     }
 
