@@ -18,6 +18,9 @@ $(DEB):
 	cd build; dpkg-buildpackage -b -us -uc
 	lintian $(DEB)
 
+dinstall: $(DEB)
+	dpkg -i $(DEB)
+
 .PHONY: clean
 clean:
 	rm -rf build/ *.deb *.buildinfo *.changes
