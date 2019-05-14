@@ -1,10 +1,11 @@
+include /usr/share/dpkg/pkg-info.mk
+include /usr/share/dpkg/architecture.mk
+
 PACKAGE := proxmox-mini-journalreader
 
-ARCH != dpkg-architecture -qDEB_BUILD_ARCH
-PKGVER != dpkg-parsechangelog -S version
 GITVERSION:=$(shell git rev-parse HEAD)
 
-DEB=${PACKAGE}_${PKGVER}_${ARCH}.deb
+DEB=${PACKAGE}_${DEB_VERSION_UPSTREAM_REVISION}_${DEB_BUILD_ARCH}.deb
 
 all: $(DEB)
 
