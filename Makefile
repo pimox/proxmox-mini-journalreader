@@ -9,6 +9,7 @@ BUILDDIR ?= ${PACKAGE}-${DEB_VERSION_UPSTREAM}
 
 DEB=${PACKAGE}_${DEB_VERSION_UPSTREAM_REVISION}_${DEB_BUILD_ARCH}.deb
 DBGDEB=${PACKAGE}-dbgsym_${DEB_VERSION_UPSTREAM_REVISION}_${DEB_BUILD_ARCH}.deb
+DSC=${PACKAGE}_${DEB_VERSION_UPSTREAM_REVISION}.dsc
 
 all: $(DEB)
 
@@ -23,12 +24,18 @@ $(DEB): $(BUILDDIR)
 	cd $(BUILDDIR); dpkg-buildpackage -b -us -uc
 	lintian $(DEB)
 
+.PHONY: dsc
+dsc: ${DSC}
+${DSC}: ${BUILDDIR}
+	cd ${BUILDDIR}; dpkg-buildpackage -S -us -uc -d
+	lintian ${DSC}
+
 dinstall: $(DEB)
 	dpkg -i $(DEB)
 
 .PHONY: clean
 clean:
-	rm -rf $(BUILDDIR) *.deb *.buildinfo *.changes
+	rm -rf $(BUILDDIR) *.deb *.buildinfo *.changes *.dsc *.tar.gz
 
 .PHONY: upload
 upload: ${DEB}
