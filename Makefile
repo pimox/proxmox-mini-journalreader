@@ -8,6 +8,7 @@ GITVERSION:=$(shell git rev-parse HEAD)
 BUILDDIR ?= ${PACKAGE}-${DEB_VERSION_UPSTREAM}
 
 DEB=${PACKAGE}_${DEB_VERSION_UPSTREAM_REVISION}_${DEB_BUILD_ARCH}.deb
+DBGDEB=${PACKAGE}-dbgsym_${DEB_VERSION_UPSTREAM_REVISION}_${DEB_BUILD_ARCH}.deb
 
 all: $(DEB)
 
@@ -28,3 +29,7 @@ dinstall: $(DEB)
 .PHONY: clean
 clean:
 	rm -rf $(BUILDDIR) *.deb *.buildinfo *.changes
+
+.PHONY: upload
+upload: ${DEB}
+	tar cf - ${DEB}|ssh -X repoman@repo.proxmox.com -- upload --product pve,pmg --dist stretch
