@@ -2,13 +2,15 @@ PROGRAM=mini-journalreader
 SOURCES=mini-journalreader.c
 
 LIBS := libsystemd
+CFLAGS += -Werror -Wall -Wextra -Wl,-z,relro -g -O2
+CFLAGS += -fstack-protector-strong -D_FORTIFY_SOURCE=2
 CFLAGS += $(shell pkg-config --cflags ${LIBS})
 LFLAGS += $(shell pkg-config --libs ${LIBS})
 
 all: ${PROGRAM}
 
 ${PROGRAM}: ${SOURCES}
-	gcc -Werror -Wall -Wl,-z,relro -Wtype-limits $< -o $@ ${CLFAGS} ${LFLAGS} -g
+	gcc $< -o $@ ${CFLAGS} ${LFLAGS}
 
 .PHONY: install
 install: ${PROGRAM}
