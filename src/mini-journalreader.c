@@ -34,18 +34,6 @@
 static char buf[BUFSIZE+1];
 static size_t offset = 0;
 
-uint64_t convert_argument(const char *argument) {
-    errno = 0;
-    char * end;
-    uint64_t value = strtoull(argument, &end, 10);
-    if (errno != 0 || *end != '\0') {
-        fprintf(stderr, "%s is not a valid number\n", argument);
-        exit(1);
-    }
-
-    return value;
-}
-
 uint64_t get_timestamp(sd_journal *j) {
     uint64_t timestamp;
     int r = sd_journal_get_realtime_usec(j, &timestamp);
@@ -207,6 +195,19 @@ void usage(char *progname) {
     fprintf(stderr, "-e and -t conflict\n");
 }
 
+static uint64_t arg_to_uint64(const char *argument) {
+    errno = 0;
+    char * end;
+    uint64_t value = strtoull(argument, &end, 10);
+    if (errno != 0 || *end != '\0') {
+        fprintf(stderr, "%s is not a valid integer number\n", argument);
+        exit(1);
+    }
+
+    return value;
+}
+
+
 int main(int argc, char *argv[]) {
     uint64_t number = 0;
     const char *directory = NULL;
@@ -219,18 +220,18 @@ int main(int argc, char *argv[]) {
     while ((c = getopt (argc, argv, "b:e:d:n:f:t:h")) != -1) {
         switch (c) {
             case 'b':
-                begin = convert_argument(optarg);
-                begin = begin*1000*1000;
+                begin = arg_to_uint64(optarg);
+                begin = begin * 1000 * 1000; // µs
                 break;
             case 'e':
-                end = convert_argument(optarg);
-                end = end*1000*1000;
+                end = arg_to_uint64(optarg);
+                end = end * 1000 * 1000; // µs
                 break;
             case 'd':
                 directory = optarg;
                 break;
             case 'n':
-                number = convert_argument(optarg);
+                number = arg_to_uint64(optarg);
                 break;
             case 'f':
                 startcursor = optarg;
