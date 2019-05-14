@@ -29,9 +29,9 @@
 #include <time.h>
 #include <unistd.h>
 
-#define BUFSIZE 4096
+#define BUFSIZE 4095
 
-static char buf[BUFSIZE+1];
+static char buf[BUFSIZE + 1];
 static size_t offset = 0;
 
 uint64_t get_timestamp(sd_journal *j) {
