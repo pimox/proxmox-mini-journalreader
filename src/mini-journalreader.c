@@ -39,7 +39,7 @@ uint64_t get_timestamp(sd_journal *j) {
     int r = sd_journal_get_realtime_usec(j, &timestamp);
     if (r < 0) {
         fprintf(stderr, "Failed  %s\n", strerror(-r));
-        return 0xFFFFFFFFFFFFFFFF;
+        return -1;
     }
     return timestamp;
 }
