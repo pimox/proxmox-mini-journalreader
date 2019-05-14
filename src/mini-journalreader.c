@@ -185,8 +185,8 @@ void usage(char *error) {
         fprintf(stderr, "ERROR: %s\n", error);
     }
     fprintf(stderr, "usage: %s [OPTIONS]\n", progname);
-    fprintf(stderr, "  -b begin\tbegin at this epoch\n");
-    fprintf(stderr, "  -e end\tend at this epoch\n");
+    fprintf(stderr, "  -b begin\tbegin at this UNIX epoch based timestamp\n");
+    fprintf(stderr, "  -e end\tend at this UNIX epoch based timestamp\n");
     fprintf(stderr, "  -d directory\tpath to journal directory\n");
     fprintf(stderr, "  -n number\tprint the last number entries\n");
     fprintf(stderr, "  -f from\tprint from this cursor\n");
