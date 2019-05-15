@@ -1,5 +1,5 @@
 proxmox-mini-journalreader (1.0-1) unstable; urgency=medium
 
-  *  initial package
+  *  initial package release
 
- -- Proxmox Support Team <support@proxmox.com>  Tue, 14 May 2019 08:50:01 +0000
+ -- Proxmox Support Team <support@proxmox.com>  Wed, 15 May 2019 11:28:08 +0200
