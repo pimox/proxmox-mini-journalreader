@@ -34,7 +34,7 @@
 static char buf[BUFSIZE + 1];
 static size_t offset = 0;
 
-uint64_t get_timestamp(sd_journal *j) {
+static uint64_t get_timestamp(sd_journal *j) {
     uint64_t timestamp;
     int r = sd_journal_get_realtime_usec(j, &timestamp);
     if (r < 0) {
@@ -44,7 +44,7 @@ uint64_t get_timestamp(sd_journal *j) {
     return timestamp;
 }
 
-void print_to_buf(const char * string, uint32_t length) {
+static void print_to_buf(const char * string, uint32_t length) {
     if (!length) {
         return;
     }
@@ -64,7 +64,7 @@ void print_to_buf(const char * string, uint32_t length) {
     offset += remaining;
 }
 
-void print_cursor(sd_journal *j) {
+static void print_cursor(sd_journal *j) {
     int r;
     char *cursor = NULL;
     r = sd_journal_get_cursor(j, &cursor);
@@ -77,7 +77,7 @@ void print_cursor(sd_journal *j) {
     free(cursor);
 }
 
-void print_first_cursor(sd_journal *j) {
+static void print_first_cursor(sd_journal *j) {
     static bool printed_first_cursor = false;
     if (!printed_first_cursor) {
         print_cursor(j);
@@ -85,7 +85,7 @@ void print_first_cursor(sd_journal *j) {
     }
 }
 
-void print_reboot(sd_journal *j) {
+static void print_reboot(sd_journal *j) {
     const char *d;
     size_t l;
     int r = sd_journal_get_data(j, "_BOOT_ID", (const void **)&d, &l);
@@ -109,7 +109,7 @@ void print_reboot(sd_journal *j) {
     }
 }
 
-void print_timestamp(sd_journal *j) {
+static void print_timestamp(sd_journal *j) {
     uint64_t timestamp;
     int r = sd_journal_get_realtime_usec(j, &timestamp);
     if (r < 0) {
@@ -130,7 +130,7 @@ void print_timestamp(sd_journal *j) {
     print_to_buf(timestring, 15);
 }
 
-void print_pid(sd_journal *j) {
+static void print_pid(sd_journal *j) {
     const char *d;
     size_t l;
     int r = sd_journal_get_data(j, "_PID", (const void **)&d, &l);
@@ -148,7 +148,7 @@ void print_pid(sd_journal *j) {
     print_to_buf("]", 1);
 }
 
-bool print_field(sd_journal *j, const char *field) {
+static bool print_field(sd_journal *j, const char *field) {
     const char *d;
     size_t l;
     int r = sd_journal_get_data(j, field, (const void **)&d, &l);
@@ -165,7 +165,7 @@ bool print_field(sd_journal *j, const char *field) {
 }
 
 
-void print_line(sd_journal *j) {
+static void print_line(sd_journal *j) {
     print_reboot(j);
     print_timestamp(j);
     print_to_buf(" ", 1);
@@ -181,9 +181,9 @@ void print_line(sd_journal *j) {
     print_to_buf("\n", 1);
 }
 
-char *progname;
+static char *progname;
 
-void usage(char *error) {
+_Noreturn static void usage(char *error) {
     if (error) {
         fprintf(stderr, "ERROR: %s\n", error);
     }
@@ -252,7 +252,6 @@ int main(int argc, char *argv[]) {
                 break;
             case 'h':
                 usage(NULL);
-                break;
             case '?':
             default:
                 usage("invalid option or missing argument");
