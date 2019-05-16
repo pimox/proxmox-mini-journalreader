@@ -91,12 +91,12 @@ static void print_reboot(sd_journal *j) {
 
     static char bootid[32];
     if (bootid[0] != '\0') { // we have some bootid
-        if (strncmp(bootid, d, l)) { // a new bootid found
-            strncpy(bootid, d, l);
+        if (memcmp(bootid, d, l)) { // a new bootid found
+            memcpy(bootid, d, l);
             print_to_buf("-- Reboot --\n", 13);
         }
     } else {
-        strncpy(bootid, d, l);
+        memcpy(bootid, d, l);
     }
 }
 
