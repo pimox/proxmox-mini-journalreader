@@ -39,12 +39,12 @@ static uint64_t get_timestamp(sd_journal *j) {
     int r = sd_journal_get_realtime_usec(j, &timestamp);
     if (r < 0) {
         fprintf(stderr, "Failed  %s\n", strerror(-r));
-        return -1;
+        return (uint64_t)-1;
     }
     return timestamp;
 }
 
-static void print_to_buf(const char * string, uint32_t length) {
+static void print_to_buf(const char * string, size_t length) {
     if (!length) {
         return;
     }
@@ -157,7 +157,7 @@ static bool print_field(sd_journal *j, const char *field) {
         return false;
     }
 
-    int fieldlen = strlen(field)+1;
+    size_t fieldlen = strlen(field)+1;
     d += fieldlen;
     l -= fieldlen;
     print_to_buf(d, l);
@@ -228,7 +228,7 @@ int main(int argc, char *argv[]) {
 
     progname = argv[0];
 
-    while ((c = getopt (argc, argv, "b:e:d:n:f:t:h")) != -1) {
+    while ((c = (char)getopt (argc, argv, "b:e:d:n:f:t:h")) != -1) {
         switch (c) {
             case 'b':
                 begin = arg_to_uint64(optarg);
