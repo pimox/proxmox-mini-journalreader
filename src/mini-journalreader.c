@@ -29,10 +29,9 @@
 #include <time.h>
 #include <unistd.h>
 
-#define BUFSIZE 4095
+#define BUFSIZE 4096
 
-static char buf[BUFSIZE + 1];
-static size_t offset = 0;
+static char BUF[BUFSIZE];
 
 static uint64_t get_timestamp(sd_journal *j) {
     uint64_t timestamp;
@@ -48,20 +47,12 @@ static void print_to_buf(const char * string, size_t length) {
     if (!length) {
         return;
     }
-    size_t string_offset = 0;
-    size_t remaining = length;
-    while (offset + remaining > BUFSIZE) {
-        strncpy(buf + offset, string + string_offset, BUFSIZE - offset);
-        string_offset += BUFSIZE - offset;
-        remaining = length - string_offset;
-        if (write (1, buf, BUFSIZE) <= 0) {
-            perror("write to stdout failed");
-            exit(1);
-        }
-        offset = 0;
+
+    size_t r = fwrite_unlocked(string, 1, length, stdout);
+    if (r < length) {
+	fprintf(stderr, "Failed to write\n");
+	exit(1);
     }
-    strncpy(buf + offset, string + string_offset, remaining);
-    offset += remaining;
 }
 
 static void print_cursor(sd_journal *j) {
@@ -272,6 +263,12 @@ int main(int argc, char *argv[]) {
         usage("unkown, or to many arguments");
     }
 
+    // setup stdout buffer
+    if (setvbuf(stdout, BUF, _IOFBF, BUFSIZE)) {
+	fprintf(stderr, "Failed to set buffer for stdout: %s\n", strerror(errno));
+	return 1;
+    }
+
     // to prevent calling it everytime we generate a timestamp
     tzset();
 
@@ -354,10 +351,7 @@ int main(int argc, char *argv[]) {
     sd_journal_close(j);
 
     // print remaining buffer
-    if (write (1, buf, offset) <= 0) {
-        perror("write to stdout failed");
-        return 1;
-    }
+    fflush_unlocked(stdout);
 
     return 0;
 }
