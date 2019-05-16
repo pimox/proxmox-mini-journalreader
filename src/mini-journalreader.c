@@ -110,11 +110,9 @@ static void print_reboot(sd_journal *j) {
 }
 
 static void print_timestamp(sd_journal *j) {
-    uint64_t timestamp;
-    int r = sd_journal_get_realtime_usec(j, &timestamp);
-    if (r < 0) {
-        fprintf(stderr, "Failed  %s\n", strerror(-r));
-        return;
+    uint64_t timestamp = get_timestamp(j);
+    if (timestamp == (uint64_t)-1) {
+	return;
     }
 
     static uint64_t last_timestamp;
