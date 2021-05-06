@@ -213,12 +213,12 @@ int main(int argc, char *argv[]) {
     const char *endcursor = NULL;
     uint64_t begin = 0;
     uint64_t end = 0;
-    char c;
+    int c;
 
     progname = argv[0];
 
-    while ((c = (char)getopt (argc, argv, "b:e:d:n:f:t:h")) != -1) {
-        switch (c) {
+    while ((c = getopt (argc, argv, "b:e:d:n:f:t:h")) != -1) {
+        switch ((char)c) {
             case 'b':
                 begin = arg_to_uint64(optarg);
                 begin = begin * 1000 * 1000; // µs
