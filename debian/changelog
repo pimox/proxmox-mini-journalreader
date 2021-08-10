@@ -1,3 +1,9 @@
+proxmox-mini-journalreader (1.2-1) bullseye; urgency=medium
+
+  * bump for Debian 11 Bullseye based releases
+
+ -- Proxmox Support Team <support@proxmox.com>  Fri, 14 May 2021 16:56:38 +0200
+
 proxmox-mini-journalreader (1.1-1rpve1) pve pmg; urgency=medium
 
   * Fixed signed/unsigned char
